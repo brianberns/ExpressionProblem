@@ -37,14 +37,17 @@ namespace Simple
 
     static class Simple
     {
+        public static IExpr CreateTestExpr()
+            => new Add(
+                new Literal(1),
+                new Add(
+                    new Literal(2),
+                    new Literal(3)));
+
         public static void Test()
         {
-            IExpr expr =
-                new Add(
-                    new Literal(1),
-                    new Add(
-                        new Literal(2),
-                        new Literal(3)));
+            var expr = CreateTestExpr();
+
             Console.WriteLine();
             Console.WriteLine("Simple test");
             Console.WriteLine($"   1 + (2 + 3) = {expr.Eval()}");

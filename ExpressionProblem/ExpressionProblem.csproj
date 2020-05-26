@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algebra.cs" />
     <Compile Include="Visitor.cs" />
     <Compile Include="Simple.cs" />
     <Compile Include="Program.cs" />

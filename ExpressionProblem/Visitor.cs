@@ -50,7 +50,32 @@ namespace Visitor
             => add.A.Accept(this) + add.B.Accept(this);
     }
 
-    class StringifyVisitor: IVisitor<string>
+    static class Visitor
+    {
+        public static IExpr CreateTestExpr()
+            => new Add(
+                new Literal(1),
+                new Add(
+                    new Literal(2),
+                    new Literal(3)));
+
+        public static void Test()
+        {
+            var expr = CreateTestExpr();
+
+            Console.WriteLine();
+            Console.WriteLine("Visitor test");
+            Console.WriteLine($"   1 + (2 + 3) = {expr.Accept(new EvalVisitor())}");
+        }
+    }
+}
+
+namespace VisitorExt
+{
+    using Visitor;
+
+    // New behavior
+    class StringifyVisitor : IVisitor<string>
     {
         public string VisitLiteral(Literal literal)
             => literal.N.ToString();
@@ -59,23 +84,17 @@ namespace Visitor
             => String.Format($"({add.A.Accept(this)} + {add.B.Accept(this)})");
     }
 
-    static class Visitor
+    static class VisitorExt
     {
         public static void Test()
         {
-            IExpr expr =
-                new Add(
-                    new Literal(1),
-                    new Add(
-                        new Literal(2),
-                        new Literal(3)));
+            var expr = Visitor.CreateTestExpr();
+
             Console.WriteLine();
-            Console.WriteLine("Visitor test");
-            Console.WriteLine($"   Eval: {expr.Accept(new EvalVisitor())}");
+            Console.WriteLine("VisitorExt test");
             Console.WriteLine($"   Stringify: {expr.Accept(new StringifyVisitor())}");
         }
+
+        // Can't add a new expression type (because it requires a change to IVisitor)
     }
 }
-
-// Can add new behavior (i.e. new visitor)
-// Can't add a new expression type (because it requires a change to IVisitor)
