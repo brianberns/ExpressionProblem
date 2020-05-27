@@ -71,6 +71,36 @@ namespace AlgebraExt
             => new EvalImpl(() => a.Eval() * b.Eval());
     }
 
+    interface IStringify
+    {
+        string Stringify();
+    }
+
+    class StringifyImpl : IStringify
+    {
+        public StringifyImpl(Func<string> func)
+        {
+            _func = func;
+        }
+        Func<string> _func;
+
+        public string Stringify()
+            => _func();
+    }
+
+    class StringifyFactory : IExprFactoryExt<IStringify>
+    {
+        public IStringify Literal(int n)
+            => new StringifyImpl(() => n.ToString());
+
+        public IStringify Add(IStringify a, IStringify b)
+            => new StringifyImpl(() => $"{a.Stringify()} + {b.Stringify()}");
+
+        // we could've skipped this if it wasn't needed by inheriting directly from IExprFactor<T> instead
+        public IStringify Mult(IStringify a, IStringify b)
+            => new StringifyImpl(() => $"{a.Stringify()} * {b.Stringify()}");
+    }
+
     static class AlgebraExt
     {
         // 4 * (5 + 6)
@@ -83,11 +113,14 @@ namespace AlgebraExt
 
         public static void Test()
         {
-            var expr = CreateTestExpr(new EvalFactoryExt());
-
             Console.WriteLine();
             Console.WriteLine("SimpleExt test");
-            Console.WriteLine($"   4 * (5 + 6) = {expr.Eval()}");
+
+            var eval = CreateTestExpr(new EvalFactoryExt());
+            Console.WriteLine($"   4 * (5 + 6) = {eval.Eval()}");
+
+            var stringify = CreateTestExpr<IStringify>(new StringifyFactory());
+            Console.WriteLine($"   Stringify: {stringify.Stringify()}");
         }
     }
 }

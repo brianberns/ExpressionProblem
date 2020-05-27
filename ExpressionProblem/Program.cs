@@ -9,5 +9,6 @@
         VisitorExt.VisitorExt.Test();
 
         Algebra.Algebra.Test();
+        AlgebraExt.AlgebraExt.Test();
     }
 }
