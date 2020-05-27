@@ -2,7 +2,7 @@
 
 namespace Algebra
 {
-    // "object algebra"
+    // "object algebra interface"
     // https://oleksandrmanzyuk.wordpress.com/2014/06/18/from-object-algebras-to-finally-tagless-interpreters-2/
     interface IExprFactory<T>
     {
@@ -27,6 +27,7 @@ namespace Algebra
             => _func();
     }
 
+    // "object algebra"
     class EvalFactory : IExprFactory<IEval>
     {
         public IEval Literal(int n)
