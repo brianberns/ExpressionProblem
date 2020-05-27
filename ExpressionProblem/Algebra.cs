@@ -66,7 +66,7 @@ namespace AlgebraExt
         T Mult(T a, T b);
     }
 
-    class EvalAlgrebraExt : EvalAlgebra, IExprAlgebraExt<IEvalExpr>
+    class EvalAlgebraExt : EvalAlgebra, IExprAlgebraExt<IEvalExpr>
     {
         public IEvalExpr Mult(IEvalExpr a, IEvalExpr b)
             => new EvalExpr(() => a.Eval() * b.Eval());
@@ -117,7 +117,7 @@ namespace AlgebraExt
             Console.WriteLine();
             Console.WriteLine("AlgebraExt test");
 
-            var evalExpr = CreateTestExprExt(new EvalAlgrebraExt());
+            var evalExpr = CreateTestExprExt(new EvalAlgebraExt());
             Console.WriteLine($"   4 * (5 + 6) = {evalExpr.Eval()}");
 
             var printExprA = Algebra.CreateTestExpr(new PrintAlgebra());
