@@ -72,34 +72,34 @@ namespace AlgebraExt
             => new EvalExpr(() => a.Eval() * b.Eval());
     }
 
-    interface IStringifyExpr
+    interface IPrintExpr
     {
-        string Stringify();
+        string Print();
     }
 
-    class StringifyExpr : IStringifyExpr
+    class PrintExpr : IPrintExpr
     {
-        public StringifyExpr(Func<string> stringify)
+        public PrintExpr(Func<string> print)
         {
-            _stringify = stringify;
+            _print = print;
         }
-        Func<string> _stringify;
+        Func<string> _print;
 
-        public string Stringify()
-            => _stringify();
+        public string Print()
+            => _print();
     }
 
-    class StringifyAlgebra : IExprAlgebraExt<IStringifyExpr>
+    class PrintAlgebra : IExprAlgebraExt<IPrintExpr>
     {
-        public IStringifyExpr Literal(int n)
-            => new StringifyExpr(() => n.ToString());
+        public IPrintExpr Literal(int n)
+            => new PrintExpr(() => n.ToString());
 
-        public IStringifyExpr Add(IStringifyExpr a, IStringifyExpr b)
-            => new StringifyExpr(() => $"{a.Stringify()} + {b.Stringify()}");
+        public IPrintExpr Add(IPrintExpr a, IPrintExpr b)
+            => new PrintExpr(() => $"{a.Print()} + {b.Print()}");
 
         // we could've skipped this if it wasn't needed by inheriting directly from IExprFactor<T> instead
-        public IStringifyExpr Mult(IStringifyExpr a, IStringifyExpr b)
-            => new StringifyExpr(() => $"{a.Stringify()} * {b.Stringify()}");
+        public IPrintExpr Mult(IPrintExpr a, IPrintExpr b)
+            => new PrintExpr(() => $"{a.Print()} * {b.Print()}");
     }
 
     static class AlgebraExt
@@ -120,11 +120,11 @@ namespace AlgebraExt
             var evalExpr = CreateTestExprExt(new EvalAlgrebraExt());
             Console.WriteLine($"   4 * (5 + 6) = {evalExpr.Eval()}");
 
-            var stringifyExprA = Algebra.CreateTestExpr(new StringifyAlgebra());
-            Console.WriteLine($"   Stringify: {stringifyExprA.Stringify()}");
+            var printExprA = Algebra.CreateTestExpr(new PrintAlgebra());
+            Console.WriteLine($"   Print: {printExprA.Print()}");
 
-            var stringifyExprB = CreateTestExprExt(new StringifyAlgebra());
-            Console.WriteLine($"   Stringify: {stringifyExprB.Stringify()}");
+            var printExprB = CreateTestExprExt(new PrintAlgebra());
+            Console.WriteLine($"   Print: {printExprB.Print()}");
         }
     }
 }

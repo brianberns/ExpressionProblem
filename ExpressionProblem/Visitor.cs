@@ -76,7 +76,7 @@ namespace VisitorExt
     using Visitor;
 
     // New behavior
-    class StringifyVisitor : IVisitor<string>
+    class PrintVisitor : IVisitor<string>
     {
         public string VisitLiteral(Literal literal)
             => literal.N.ToString();
@@ -93,7 +93,7 @@ namespace VisitorExt
 
             Console.WriteLine();
             Console.WriteLine("VisitorExt test");
-            Console.WriteLine($"   Stringify: {expr.Accept(new StringifyVisitor())}");
+            Console.WriteLine($"   Print: {expr.Accept(new PrintVisitor())}");
         }
 
         // Can't add a new expression type (because it requires a change to IVisitor)
