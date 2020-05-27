@@ -37,6 +37,7 @@ namespace Simple
 
     static class Simple
     {
+        // 1 + (2 + 3)
         public static IExpr CreateTestExpr()
             => new Add(
                 new Literal(1),
@@ -73,6 +74,26 @@ namespace SimpleExt
 
         public int Eval()
             => A.Eval() * B.Eval();
+    }
+
+    static class SimpleExt
+    {
+        // 4 * (5 + 6)
+        public static IExpr CreateTestExpr()
+            => new Mult(
+                new Literal(4),
+                new Add(
+                    new Literal(5),
+                    new Literal(6)));
+
+        public static void Test()
+        {
+            var expr = CreateTestExpr();
+
+            Console.WriteLine();
+            Console.WriteLine("SimpleExt test");
+            Console.WriteLine($"   4 * (5 + 6) = {expr.Eval()}");
+        }
     }
 
     // Can't add new behavior

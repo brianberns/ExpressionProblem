@@ -52,6 +52,7 @@ namespace Visitor
 
     static class Visitor
     {
+        // 1 + (2 + 3)
         public static IExpr CreateTestExpr()
             => new Add(
                 new Literal(1),

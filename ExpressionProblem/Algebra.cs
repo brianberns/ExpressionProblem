@@ -50,8 +50,44 @@ namespace Algebra
             Console.WriteLine();
             Console.WriteLine("Algebra test");
 
-            var eval = CreateTestExpr(new EvalFactory());
-            Console.WriteLine($"   Eval: {eval.Eval()}");
+            var expr = CreateTestExpr(new EvalFactory());
+            Console.WriteLine($"   1 + (2 + 3) = {expr.Eval()}");
+        }
+    }
+}
+
+namespace AlgebraExt
+{
+    using Algebra;
+
+    interface IExprFactoryExt<T> : IExprFactory<T>
+    {
+        T Mult(T a, T b);
+    }
+
+    class EvalFactoryExt : EvalFactory, IExprFactoryExt<IEval>
+    {
+        public IEval Mult(IEval a, IEval b)
+            => new EvalImpl(() => a.Eval() * b.Eval());
+    }
+
+    static class AlgebraExt
+    {
+        // 4 * (5 + 6)
+        public static T CreateTestExpr<T>(IExprFactoryExt<T> factory)
+            => factory.Mult(
+                factory.Literal(4),
+                factory.Add(
+                    factory.Literal(5),
+                    factory.Literal(6)));
+
+        public static void Test()
+        {
+            var expr = CreateTestExpr(new EvalFactoryExt());
+
+            Console.WriteLine();
+            Console.WriteLine("SimpleExt test");
+            Console.WriteLine($"   4 * (5 + 6) = {expr.Eval()}");
         }
     }
 }
