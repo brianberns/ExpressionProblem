@@ -2,44 +2,44 @@
 
 namespace Algebra
 {
-    // "object algebra interface"
+    // "object algebra interface" - like an abstract factory
     // https://oleksandrmanzyuk.wordpress.com/2014/06/18/from-object-algebras-to-finally-tagless-interpreters-2/
-    interface IExprFactory<T>
+    interface IExprAlgebra<T>
     {
         T Literal(int n);
         T Add(T a, T b);
     }
 
-    interface IEval
+    interface IEvalExpr
     {
         int Eval();
     }
 
-    class EvalImpl : IEval
+    class EvalExpr : IEvalExpr
     {
-        public EvalImpl(Func<int> func)
+        public EvalExpr(Func<int> eval)
         {
-            _func = func;
+            _eval = eval;
         }
-        Func<int> _func;
+        Func<int> _eval;
 
         public int Eval()
-            => _func();
+            => _eval();
     }
 
-    // "object algebra"
-    class EvalFactory : IExprFactory<IEval>
+    // "object algebra" - like a concrete factory
+    class EvalAlgebra : IExprAlgebra<IEvalExpr>
     {
-        public IEval Literal(int n)
-            => new EvalImpl(() => n);
+        public IEvalExpr Literal(int n)
+            => new EvalExpr(() => n);
 
-        public IEval Add(IEval a, IEval b)
-            => new EvalImpl(() => a.Eval() + b.Eval());
+        public IEvalExpr Add(IEvalExpr a, IEvalExpr b)
+            => new EvalExpr(() => a.Eval() + b.Eval());
     }
 
     static class Algebra
     {
-        public static T CreateTestExpr<T>(IExprFactory<T> factory)
+        public static T CreateTestExpr<T>(IExprAlgebra<T> factory)
             => factory.Add(
                 factory.Literal(1),
                 factory.Add(
@@ -51,7 +51,7 @@ namespace Algebra
             Console.WriteLine();
             Console.WriteLine("Algebra test");
 
-            var expr = CreateTestExpr(new EvalFactory());
+            var expr = CreateTestExpr(new EvalAlgebra());
             Console.WriteLine($"   1 + (2 + 3) = {expr.Eval()}");
         }
     }
@@ -61,51 +61,51 @@ namespace AlgebraExt
 {
     using Algebra;
 
-    interface IExprFactoryExt<T> : IExprFactory<T>
+    interface IExprAlgebraExt<T> : IExprAlgebra<T>
     {
         T Mult(T a, T b);
     }
 
-    class EvalFactoryExt : EvalFactory, IExprFactoryExt<IEval>
+    class EvalAlgrebraExt : EvalAlgebra, IExprAlgebraExt<IEvalExpr>
     {
-        public IEval Mult(IEval a, IEval b)
-            => new EvalImpl(() => a.Eval() * b.Eval());
+        public IEvalExpr Mult(IEvalExpr a, IEvalExpr b)
+            => new EvalExpr(() => a.Eval() * b.Eval());
     }
 
-    interface IStringify
+    interface IStringifyExpr
     {
         string Stringify();
     }
 
-    class StringifyImpl : IStringify
+    class StringifyExpr : IStringifyExpr
     {
-        public StringifyImpl(Func<string> func)
+        public StringifyExpr(Func<string> stringify)
         {
-            _func = func;
+            _stringify = stringify;
         }
-        Func<string> _func;
+        Func<string> _stringify;
 
         public string Stringify()
-            => _func();
+            => _stringify();
     }
 
-    class StringifyFactory : IExprFactoryExt<IStringify>
+    class StringifyAlgebra : IExprAlgebraExt<IStringifyExpr>
     {
-        public IStringify Literal(int n)
-            => new StringifyImpl(() => n.ToString());
+        public IStringifyExpr Literal(int n)
+            => new StringifyExpr(() => n.ToString());
 
-        public IStringify Add(IStringify a, IStringify b)
-            => new StringifyImpl(() => $"{a.Stringify()} + {b.Stringify()}");
+        public IStringifyExpr Add(IStringifyExpr a, IStringifyExpr b)
+            => new StringifyExpr(() => $"{a.Stringify()} + {b.Stringify()}");
 
         // we could've skipped this if it wasn't needed by inheriting directly from IExprFactor<T> instead
-        public IStringify Mult(IStringify a, IStringify b)
-            => new StringifyImpl(() => $"{a.Stringify()} * {b.Stringify()}");
+        public IStringifyExpr Mult(IStringifyExpr a, IStringifyExpr b)
+            => new StringifyExpr(() => $"{a.Stringify()} * {b.Stringify()}");
     }
 
     static class AlgebraExt
     {
         // 4 * (5 + 6)
-        public static T CreateTestExpr<T>(IExprFactoryExt<T> factory)
+        public static T CreateTestExprExt<T>(IExprAlgebraExt<T> factory)
             => factory.Mult(
                 factory.Literal(4),
                 factory.Add(
@@ -115,13 +115,16 @@ namespace AlgebraExt
         public static void Test()
         {
             Console.WriteLine();
-            Console.WriteLine("SimpleExt test");
+            Console.WriteLine("AlgebraExt test");
 
-            var eval = CreateTestExpr(new EvalFactoryExt());
-            Console.WriteLine($"   4 * (5 + 6) = {eval.Eval()}");
+            var evalExpr = CreateTestExprExt(new EvalAlgrebraExt());
+            Console.WriteLine($"   4 * (5 + 6) = {evalExpr.Eval()}");
 
-            var stringify = CreateTestExpr<IStringify>(new StringifyFactory());
-            Console.WriteLine($"   Stringify: {stringify.Stringify()}");
+            var stringifyExprA = Algebra.CreateTestExpr(new StringifyAlgebra());
+            Console.WriteLine($"   Stringify: {stringifyExprA.Stringify()}");
+
+            var stringifyExprB = CreateTestExprExt(new StringifyAlgebra());
+            Console.WriteLine($"   Stringify: {stringifyExprB.Stringify()}");
         }
     }
 }
