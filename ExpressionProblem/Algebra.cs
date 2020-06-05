@@ -134,15 +134,17 @@ namespace Combine
     using Algebra;
     using AlgebraExt;
 
-    class ExprAlgCombine<T, U> : IExprAlgebra<(T, U)>
+    class ExprAlgCombine<T, U, IExprAlgebraT, IExprAlgebraU> : IExprAlgebra<(T, U)>
+        where IExprAlgebraT : IExprAlgebra<T>
+        where IExprAlgebraU : IExprAlgebra<U>
     {
-        public ExprAlgCombine(IExprAlgebra<T> tAlg, IExprAlgebra<U> uAlg)
+        public ExprAlgCombine(IExprAlgebraT tAlg, IExprAlgebraU uAlg)
         {
             _tAlg = tAlg;
             _uAlg = uAlg;
         }
-        private IExprAlgebra<T> _tAlg;
-        private IExprAlgebra<U> _uAlg;
+        private IExprAlgebraT _tAlg;
+        private IExprAlgebraU _uAlg;
 
         public (T, U) Literal(int n)
             => (_tAlg.Literal(n),
@@ -155,8 +157,8 @@ namespace Combine
 
     static class ExprAlgCombine
     {
-        public static ExprAlgCombine<T, U> Create<T, U>(IExprAlgebra<T> tAlg, IExprAlgebra<U> uAlg)
-            => new ExprAlgCombine<T, U>(tAlg, uAlg);
+        public static ExprAlgCombine<T, U, IExprAlgebra<T>, IExprAlgebra<U>> Create<T, U>(IExprAlgebra<T> tAlg, IExprAlgebra<U> uAlg)
+            => new ExprAlgCombine<T, U, IExprAlgebra<T>, IExprAlgebra<U>>(tAlg, uAlg);
     }
 
     static class Combine
