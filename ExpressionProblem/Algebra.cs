@@ -128,3 +128,48 @@ namespace AlgebraExt
         }
     }
 }
+
+namespace Combine
+{
+    using Algebra;
+    using AlgebraExt;
+
+    class ExprAlgCombine<T, U> : IExprAlgebra<(T, U)>
+    {
+        public ExprAlgCombine(IExprAlgebra<T> tAlg, IExprAlgebra<U> uAlg)
+        {
+            _tAlg = tAlg;
+            _uAlg = uAlg;
+        }
+        private IExprAlgebra<T> _tAlg;
+        private IExprAlgebra<U> _uAlg;
+
+        public (T, U) Literal(int n)
+            => (_tAlg.Literal(n),
+                _uAlg.Literal(n));
+
+        public (T, U) Add((T, U) a, (T, U) b)
+            => (_tAlg.Add(a.Item1, b.Item1),
+                _uAlg.Add(a.Item2, b.Item2));
+    }
+
+    static class ExprAlgCombine
+    {
+        public static ExprAlgCombine<T, U> Create<T, U>(IExprAlgebra<T> tAlg, IExprAlgebra<U> uAlg)
+            => new ExprAlgCombine<T, U>(tAlg, uAlg);
+    }
+
+    static class Combine
+    {
+        public static void Test()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Combine test");
+
+            var alg = ExprAlgCombine.Create(new EvalAlgebra(), new PrintAlgebra());
+            var expr = Algebra.CreateTestExpr(alg);
+            Console.WriteLine($"   1 + (2 + 3) = {expr.Item1.Eval()}");
+            Console.WriteLine($"   Print: {expr.Item2.Print()}");
+        }
+    }
+}

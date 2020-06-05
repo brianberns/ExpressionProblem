@@ -10,5 +10,6 @@
 
         Algebra.Algebra.Test();
         AlgebraExt.AlgebraExt.Test();
+        Combine.Combine.Test();
     }
 }
