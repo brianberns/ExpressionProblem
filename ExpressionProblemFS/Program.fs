@@ -32,6 +32,13 @@ module Algebra =
             member __.Add a b =
                 fun () -> a () + b ()
 
+    type PrintAlgebra () =
+        interface ExprAlgebra<unit -> string> with
+            member __.Literal n =
+                fun () -> n.ToString()
+            member __.Add a b =
+                fun () -> sprintf "(%s + %s)" (a ()) (b ())
+
     let test () =
 
         let createTestExpr (factory : ExprAlgebra<_>) =
@@ -41,10 +48,12 @@ module Algebra =
                     (factory.Literal 2)
                     (factory.Literal 3))
 
-        let expr = createTestExpr <| EvalAlgebra ()
+        let evalExpr = createTestExpr <| EvalAlgebra ()
+        let printExpr = createTestExpr <| PrintAlgebra ()
         printfn ""
         printfn "Algebra test"
-        printfn "   Eval: %A" <| expr ()
+        printfn "   Eval: %A" <| evalExpr ()
+        printfn "   Print: %s" <| printExpr ()
 
 [<EntryPoint>]
 let main argv =
