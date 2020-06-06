@@ -25,15 +25,17 @@ module Algebra =
         abstract member Literal : int -> 'T
         abstract member Add : 'T -> 'T -> 'T
 
+    type IExprAlgebra<'T> = ExprAlgebra<unit -> 'T>
+
     type EvalAlgebra () =
-        interface ExprAlgebra<unit -> int> with
+        interface IExprAlgebra<int> with
             member __.Literal n =
                 fun () -> n
             member __.Add a b =
                 fun () -> a () + b ()
 
     type PrintAlgebra () =
-        interface ExprAlgebra<unit -> string> with
+        interface IExprAlgebra<string> with
             member __.Literal n =
                 fun () -> n.ToString()
             member __.Add a b =
