@@ -25,21 +25,15 @@ module Algebra =
         abstract member Literal : int -> 'T
         abstract member Add : 'T -> 'T -> 'T
 
-    type IExprAlgebra<'T> = ExprAlgebra<unit -> 'T>
-
     type EvalAlgebra () =
-        interface IExprAlgebra<int> with
-            member __.Literal n =
-                fun () -> n
-            member __.Add a b =
-                fun () -> a () + b ()
+        interface ExprAlgebra<int> with
+            member __.Literal n = n
+            member __.Add a b = a + b
 
     type PrintAlgebra () =
-        interface IExprAlgebra<string> with
-            member __.Literal n =
-                fun () -> n.ToString()
-            member __.Add a b =
-                fun () -> sprintf "(%s + %s)" (a ()) (b ())
+        interface ExprAlgebra<string> with
+            member __.Literal n = n.ToString()
+            member __.Add a b = sprintf "(%s + %s)" a b
 
     let test () =
 
@@ -50,12 +44,12 @@ module Algebra =
                     (factory.Literal 2)
                     (factory.Literal 3))
 
-        let evalExpr = createTestExpr <| EvalAlgebra ()
-        let printExpr = createTestExpr <| PrintAlgebra ()
+        let eval = createTestExpr <| EvalAlgebra ()
+        let print = createTestExpr <| PrintAlgebra ()
         printfn ""
         printfn "Algebra test"
-        printfn "   Eval: %A" <| evalExpr ()
-        printfn "   Print: %s" <| printExpr ()
+        printfn "   Eval: %A" <| eval
+        printfn "   Print: %s" <| print
 
 [<EntryPoint>]
 let main argv =
